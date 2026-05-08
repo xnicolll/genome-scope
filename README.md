@@ -23,7 +23,7 @@ There are two options to discover GenomeScope.
 
 ## Setup
 
-Requires **macOS or Linux**, **Python 3.11+**, **Node.js 18+**, and **uv** (`brew install uv`).
+Requires **macOS or Linux**, **Python 3.11+**, **Node.js 18+** (`brew install node`), and **uv** (`brew install uv`).
 
 ```bash
 git clone https://github.com/xnicolll/genome-scope.git
@@ -40,6 +40,10 @@ Then open **http://localhost:3000**. Stop with `./run.sh down`.
 > log with `./run.sh logs web`.
 
 The dashboard is desktop-only (≥ 1280 px). Mobile is future work.
+
+Hit an error? Jump to **[Troubleshooting](#troubleshooting)** at the bottom -
+covers `npm`/`uv` not found, port-in-use, blank dashboard, and `gdc-client`
+issues.
 
 ## Quickstart
 
@@ -232,6 +236,9 @@ genome-scope/
 - **`gdc-client` blocked on macOS** - `chmod +x ./gdc-client && xattr -d com.apple.quarantine ./gdc-client`
 - **`./run.sh down` says "pid file present but process gone"** - harmless,
   the servers had already exited. The pid files are cleared automatically.
+- **`npm: command not found`** - Node.js isn't installed. On macOS:
+  `brew install node`. On Ubuntu/Debian: `sudo apt install nodejs npm`.
+  Verify with `node -v` (need ≥ 18) before re-running `./run.sh up`.
 - **`uv` not found** - `brew install uv` (or see [astral.sh/uv](https://astral.sh/uv))
 - **Port 3000 / 8000 already in use** - `./run.sh down` to clean up stale dev servers
 - **`EADDRINUSE` after a crash, and `./run.sh down` says "process gone"** - the
