@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #F5F1E8;
+  --color-fg: #1A1814;
+  --color-accent: #F5D547;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* Quiet, soft selection */
+::selection {
+  background: rgba(245, 213, 71, 0.45);
+  color: #1A1814;
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(26, 24, 20, 0.12);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 24, 20, 0.20);
+}
+
+@layer components {
+  /* Press feedback + smooth colour transitions for any interactive element */
+  .press {
+    @apply transition-[transform,background-color,border-color,color,box-shadow] duration-200 ease-out-strong;
+  }
+  .press:active {
+    transform: scale(0.97);
+  }
+}

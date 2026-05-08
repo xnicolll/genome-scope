@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  LaunchAgent for GenomeScope daily training. Installed + managed via
+  ./run.sh schedule-install / schedule-remove. Placeholders are
+  substituted at install time — do not edit the installed copy directly.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.genomescope.daily</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>{ROOT}/run.sh</string>
+    <string>daily</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>{ROOT}</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:{HOME}/.local/bin</string>
+    <key>HOME</key>
+    <string>{HOME}</string>
+  </dict>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>{HOUR}</integer>
+    <key>Minute</key>
+    <integer>{MINUTE}</integer>
+  </dict>
+
+  <!-- If the Mac is asleep at the scheduled time, launchd runs the job at
+       next wake. Don't run at load so installing doesn't kick off a train. -->
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>{LOGS}/launchd.out.log</string>
+
+  <key>StandardErrorPath</key>
+  <string>{LOGS}/launchd.err.log</string>
+</dict>
+</plist>

@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# uv
+.uv/
+
+# Node
+node_modules/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Data — never commit raw genomic data (too big, re-downloadable)
+backend/data/raw/
+backend/data/cache/
+backend/data/processed/
+backend/data/logs/
+backend/data/models/
+!backend/data/raw/.gitkeep
+!backend/data/fixtures/
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Claude Code local settings
+.claude/settings.json
+.claude/settings.local.json
+
+# GDC transfer tool + manifest (don't commit binaries or PII-adjacent manifests)
+gdc-client
+gdc_manifest.*.txt
