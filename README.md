@@ -6,16 +6,16 @@ TCGA to flag which ones look cancer-relevant.
 
 Tumours can grow unchecked when cancer-suppressor genes are switched off.
 The main off-switch in DNA is methylation, a chemical tag (CH₃) that lands
-on **CpG islands** — CG-rich stretches at the start of most genes.
+on **CpG islands** - CG-rich stretches at the start of most genes.
 Identifying which islands are silenced in a tumour, and which gene isoforms
 they silence, aids in the discovery of candidate driver genes and drug targets.
 There are two options to discover GenomeScope.
 
-- **Hosted dashboard** — [genome-scope.vercel.app](https://genome-scope.vercel.app/)
+- **Hosted dashboard** - [genome-scope.vercel.app](https://genome-scope.vercel.app/)
   for a read-only view of the results (genomic track, TSG hits, model
   comparison, isoform report). No setup. Frozen snapshot, no FASTA upload,
   no live training.
-- **Local clone** — follow the **Setup** steps below to run everything end-to-end:
+- **Local clone** - follow the **Setup** steps below to run everything end-to-end:
   re-train the Beta HMM nightly, ingest new TCGA cohorts, upload your own FASTA,
   and regenerate every figure from raw data.
 
@@ -225,16 +225,16 @@ genome-scope/
 
 ## Troubleshooting
 
-- **Dashboard 404s on first launch** — Next.js is still compiling. Wait
+- **Dashboard 404s on first launch** - Next.js is still compiling. Wait
   30-60 s and refresh, or tail `./run.sh logs web` until you see `Ready in …`.
-- **Dashboard still won't load** — `rm -rf frontend/.next && ./run.sh up`
-- **`gdc-client not found`** — install it first (see *Adding real TCGA data*).
-- **`gdc-client` blocked on macOS** — `chmod +x ./gdc-client && xattr -d com.apple.quarantine ./gdc-client`
-- **`./run.sh down` says "pid file present but process gone"** — harmless,
+- **Dashboard still won't load** - `rm -rf frontend/.next && ./run.sh up`
+- **`gdc-client not found`** - install it first (see *Adding real TCGA data*).
+- **`gdc-client` blocked on macOS** - `chmod +x ./gdc-client && xattr -d com.apple.quarantine ./gdc-client`
+- **`./run.sh down` says "pid file present but process gone"** - harmless,
   the servers had already exited. The pid files are cleared automatically.
-- **`uv` not found** — `brew install uv` (or see [astral.sh/uv](https://astral.sh/uv))
-- **Port 3000 / 8000 already in use** — `./run.sh down` to clean up stale dev servers
-- **`EADDRINUSE` after a crash, and `./run.sh down` says "process gone"** — the
+- **`uv` not found** - `brew install uv` (or see [astral.sh/uv](https://astral.sh/uv))
+- **Port 3000 / 8000 already in use** - `./run.sh down` to clean up stale dev servers
+- **`EADDRINUSE` after a crash, and `./run.sh down` says "process gone"** - the
   pid files are stale but the real servers are still running. Find + kill them:
   ```bash
   lsof -nP -iTCP:3000 -sTCP:LISTEN     # note the PID
