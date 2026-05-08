@@ -9,6 +9,15 @@ The main off-switch in DNA is methylation, a chemical tag (CH₃) that lands
 on **CpG islands** — CG-rich stretches at the start of most genes.
 Identifying which islands are silenced in a tumour, and which gene isoforms
 they silence, aids in the discovery of candidate driver genes and drug targets.
+There are two options to discover GenomeScope.
+
+- **Hosted dashboard** — [genome-scope.vercel.app](https://genome-scope.vercel.app/)
+  for a read-only view of the results (genomic track, TSG hits, model
+  comparison, isoform report). No setup. Frozen snapshot, no FASTA upload,
+  no live training.
+- **Local clone** — follow the **Setup** steps below to run everything end-to-end:
+  re-train the Beta HMM nightly, ingest new TCGA cohorts, upload your own FASTA,
+  and regenerate every figure from raw data.
 
 **Joe Nicol · Columbia CBMFW 4761 · Spring 2026**
 
@@ -17,27 +26,59 @@ they silence, aids in the discovery of candidate driver genes and drug targets.
 Requires **macOS or Linux**, **Python 3.11+**, **Node.js 18+**, and **uv** (`brew install uv`).
 
 ```bash
-git clone https://github.com/xnicolll/hmm-cpg.git
-cd hmm-cpg
-./run.sh    # installs everything, runs tests, downloads chr21
+git clone https://github.com/xnicolll/genome-scope.git
+cd genome-scope
+./run.sh              # syncs env, runs tests, downloads chr21 (~1 min)
+./run.sh up           # start FastAPI :8000 + Next.js :3000
 ```
+
+Then open **http://localhost:3000**. Stop with `./run.sh down`.
+
+> **First launch is slow.** `./run.sh up` runs a one-off `npm install` and
+> Next.js compiles the dashboard on first request - the page can take
+> 30-60 s to appear. If it 404s or hangs, wait and refresh, or tail the
+> log with `./run.sh logs web`.
+
+The dashboard is desktop-only (≥ 1280 px). Mobile is future work.
 
 ## Quickstart
 
 ```bash
-./run.sh              # installs everything, runs tests, downloads chr21
-./run.sh tcga         # download 20 TCGA-BRCA tumour samples (~250 MB)
-./run.sh report-full  # cancer-overlay isoform report
-./run.sh up           # launch FastAPI :8000 and Next.js :3000
+./run.sh up           # FastAPI :8000 + Next.js :3000 (background)
+./run.sh report-full  # cancer-overlay isoform report (CSV + JSON)
+./run.sh down         # stop both servers
 ```
 
-Open **http://localhost:3000**. Stop with `./run.sh down`.
+## Adding real TCGA data (optional)
 
-The dashboard is desktop-only (≥ 1280 px). Mobile is future work.
+The default install bundles a synthetic methylation track so the dashboard
+works out of the box. To overlay **real tumour data**, install the
+**GDC Data Transfer Tool** first.
 
-> **TCGA note.** Default cohorts use GDC open-access - no account needed.
-> On macOS, `gdc-client` may be Gatekeeper-quarantined on first run; clear it once with
-> `xattr -d com.apple.quarantine ./gdc-client`.
+**1. Download `gdc-client`** from
+[gdc.cancer.gov/access-data/gdc-data-transfer-tool](https://gdc.cancer.gov/access-data/gdc-data-transfer-tool)
+(pick the macOS or Linux binary). Unzip into the repo root so the binary
+lives at `./gdc-client`.
+
+**2. Make it executable, and on macOS clear the Gatekeeper quarantine:**
+
+```bash
+chmod +x ./gdc-client
+xattr -d com.apple.quarantine ./gdc-client   # macOS only
+```
+
+**3. Pull a cohort:**
+
+```bash
+./run.sh tcga-luad     # 20 TCGA-LUAD lung tumours       (queries GDC API)
+./run.sh tcga-normal   # 10 TCGA-BRCA solid-tissue-normal (queries GDC API)
+./run.sh tcga          # 20 TCGA-BRCA breast tumours     (needs a manifest)
+```
+
+`tcga-luad` and `tcga-normal` query the GDC API directly. `tcga` also needs a
+`gdc_manifest.*.txt` from the [GDC portal](https://portal.gdc.cancer.gov)
+placed at the repo root - start with `tcga-luad` if you just want to see
+the overlay working.
 
 ## How accurate is it?
 
@@ -150,7 +191,7 @@ launchctl kickstart -k gui/$UID/com.genomescope.daily
 ## Layout
 
 ```
-hmm-cpg/
+genome-scope/
 ├── backend/                  Python HMM engine + FastAPI
 │   └── src/genomescope/
 │       ├── hmm/              forward-backward, Viterbi, Baum-Welch
@@ -184,7 +225,21 @@ hmm-cpg/
 
 ## Troubleshooting
 
-- **Dashboard won't load** — `rm -rf frontend/.next && ./run.sh up`
-- **`gdc-client` blocked on macOS** — `xattr -d com.apple.quarantine ./gdc-client`
+- **Dashboard 404s on first launch** — Next.js is still compiling. Wait
+  30-60 s and refresh, or tail `./run.sh logs web` until you see `Ready in …`.
+- **Dashboard still won't load** — `rm -rf frontend/.next && ./run.sh up`
+- **`gdc-client not found`** — install it first (see *Adding real TCGA data*).
+- **`gdc-client` blocked on macOS** — `chmod +x ./gdc-client && xattr -d com.apple.quarantine ./gdc-client`
+- **`./run.sh down` says "pid file present but process gone"** — harmless,
+  the servers had already exited. The pid files are cleared automatically.
 - **`uv` not found** — `brew install uv` (or see [astral.sh/uv](https://astral.sh/uv))
 - **Port 3000 / 8000 already in use** — `./run.sh down` to clean up stale dev servers
+- **`EADDRINUSE` after a crash, and `./run.sh down` says "process gone"** — the
+  pid files are stale but the real servers are still running. Find + kill them:
+  ```bash
+  lsof -nP -iTCP:3000 -sTCP:LISTEN     # note the PID
+  lsof -nP -iTCP:8000 -sTCP:LISTEN
+  kill <pid-from-3000> <pid-from-8000>
+  rm -f backend/data/logs/pids/{api,web}.pid
+  ./run.sh up
+  ```
