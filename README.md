@@ -12,7 +12,7 @@ they silence, aids in the discovery of candidate driver genes and drug targets.
 There are two options to discover GenomeScope.
 
 - **Hosted dashboard** - [genome-scope.vercel.app](https://genome-scope.vercel.app/)
-  for a read-only view of the results (genomic track, TSG hits, model
+  for a read-only view of the sample results (genomic track, TSG hits, model
   comparison, isoform report). No setup. Frozen snapshot, no FASTA upload,
   no live training.
 - **Local clone** - follow the **Setup** steps below to run everything end-to-end:
